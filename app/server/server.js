@@ -18,7 +18,7 @@ let server = new Express();
 let port = process.env.PORT || 3000;
 let scriptSrcs;
 
-let styleSrc;
+let styleSrcs;
 if ( process.env.NODE_ENV === 'production' ) {
   let assets = require('../../dist/webpack-assets.json');
   let refManifest = require('../../dist/rev-manifest.json');
@@ -26,14 +26,20 @@ if ( process.env.NODE_ENV === 'production' ) {
     `/${assets.vendor.js}`,
     `/${assets.app.js}`
   ];
-  styleSrc = `/${refManifest['main.css']}`;
+  styleSrcs = [
+    `/${refManifest['bootstrap.css']}`
+    `/${refManifest['main.css']}`
+  ];
 } else {
   scriptSrcs = [
     'http://localhost:3001/static/vendor.js',
     'http://localhost:3001/static/dev.js',
     'http://localhost:3001/static/app.js'
   ];
-  styleSrc = '/main.css';
+  styleSrcs = [
+    '/bootstrap.css',
+    '/main.css'
+  ];
 }
 
 server.use(compression());
@@ -82,7 +88,7 @@ server.get('*', (req, res, next)=> {
         );
 
         if ( getCurrentUrl() === reqUrl ) {
-          res.render('index', { html, scriptSrcs, reduxState, styleSrc });
+          res.render('index', { html, scriptSrcs, reduxState, styleSrcs });
         } else {
           res.redirect(302, getCurrentUrl());
         }
